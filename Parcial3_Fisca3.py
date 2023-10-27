@@ -1,6 +1,7 @@
 
 
 import tkinter as tk
+from tkinter import messagebox
 
 class Window1:
     def __init__(self, master):
@@ -48,7 +49,10 @@ class Window1:
         tk.Checkbutton(text = "Cocina", variable = self.cocina, onvalue = "Cocina", offvalue = "0").pack()
         tk.Checkbutton(text = "Licuadora", variable = self.licuadora, onvalue = "Licuadora", offvalue = "0").pack()
         tk.Checkbutton(text = "Horno", variable = self.horno, onvalue = "Horno", offvalue = "0").pack()
-        tk.Label(text = "Selecciona el voltaje ").pack()
+        tk.Label(text= "Selecciona el largo del cable (en metros)").pack()
+        self.lenght = tk.Entry()
+        self.lenght.pack()
+
 
 
         tk.Button(text = "Siguiente", command = self.next).pack()
@@ -74,14 +78,88 @@ class Window1:
         self.list.append(self.calentador.get())
         self.list.append(self.cocina.get())
         self.list.append(self.licuadora.get())
-        print(len(self.list))
-        
+        self.electrodomesticos = list(filter(lambda x: x != "0", self.list))
+        self.datos = self.generateDict(self.electrodomesticos)
+        print(self.datos)
+        if (len(self.electrodomesticos) == 0 or len(self.electrodomesticos) > 10):
+            tk.messagebox.showerror("Error", "Selecciona entre 1 y 10 electrodomésticos")
+        elif (self.lenght.get() == "" or self.lenght.get().isdigit() == False or self.lenght.get() == "0"):
+            tk.messagebox.showerror("Error", "Ingresa un largo válido")
+        else:
+            self.final_lenght = self.lenght.get()
+            self.master.destroy()
+            Window2(self.electrodomesticos, self.final_lenght, self.datos, self.electrodomesticos[0], 0)
 
-        print(self.lavadora.get())
-    def isZero(self, list):
-        for i in range(len(list)):
-            if list[i] == "0":
-                list.pop(i)
+
+    def generateDict(self, list):
+        dict = {}
+        for i in range (len(list)):
+            dict[list[i]] = []
+
+        return dict
+
+
+class Window2:
+    def __init__(self, list, lenght, dict, name, index):
+        self.index = index
+        self.list = list
+        self.lenght = lenght
+        self.electrodomesticos = dict
+        self.name = name
+        self.master = tk.Tk()
+        self.master.title("Selección de datos")
+        self.master.geometry("1000x1000")
+        tk.Label(text = "Selecciona los datos de este electrodoméstico: " + self.name).pack()
+        tk.Label(text = "Voltaje (voltios)").pack()
+        self.Voltaje = tk.Entry()
+        self.Voltaje.pack()
+        tk.Label(text = "Corriente (amperios)").pack()
+        self.Corriente = tk.Entry()
+        self.Corriente.pack()
+        tk.Label(text = "Potencia (kilowatts)").pack()
+        self.Potencia = tk.Entry()
+        self.Potencia.pack()
+        tk.Label(text = "Horas de uso").pack()
+        self.horas = tk.Entry()
+        self.horas.pack()
+        tk.Button(text = "Siguiente", command= self.next).pack()
+        self.master.mainloop()
+
+    def next(self):
+        pass
+        if (self.Voltaje.get() == "" or self.Voltaje.get().isdigit() == False or self.Voltaje.get() == "0"):
+            tk.messagebox.showerror("Error", "Ingresa un voltaje válido")
+        elif (self.Corriente.get() == "" or self.Corriente.get().isdigit() == False or self.Corriente.get() == "0"):
+            tk.messagebox.showerror("Error", "Ingresa una corriente válida")
+        elif (self.Potencia.get() == "" or self.Potencia.get().isdigit() == False or self.Potencia.get() == "0"):
+            tk.messagebox.showerror("Error", "Ingresa una potencia válida")
+        elif (self.horas.get() == "" or self.horas.get().isdigit() == False or self.horas.get() == "0"):
+            tk.messagebox.showerror("Error", "Ingresa una cantidad de horas válida")
+        else:
+            self.electrodomesticos[self.name].append(self.Voltaje.get())
+            self.electrodomesticos[self.name].append(self.Corriente.get())
+            self.electrodomesticos[self.name].append(self.Potencia.get())
+            self.electrodomesticos[self.name].append(self.horas.get())
+
+            if (self.index < len(self.list)):
+                self.index += 1
+                self.name = self.list[self.index]
+                self.master.destroy()
+                Window2(self.list, self.lenght, self.electrodomesticos, self.name, self.index)
+            else:
+                self.master.destroy()
+                Window3(self.list, self.lenght, self.electrodomesticos)
+
+class Window3:
+    def __init__(self, list, lenght, dict):
+        self.list = list
+        self.lenght = lenght
+        self.electrodomesticos = dict
+        self.master = tk.Tk()
+        self.master.title("Resultados")
+        self.master.geometry("1000x1000")
+        self.master.mainloop()
+
 
 
 
