@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from mpl_interactions import ioff, panhandler, zoom_factory
+import matplotlib.patches as patches
 import numpy as np
 
 class Window1:
@@ -121,7 +122,7 @@ class Window2:
         tk.Label(text = "Corriente (amperios)").pack()
         self.Corriente = tk.Entry()
         self.Corriente.pack()
-        tk.Label(text = "Potencia (kilowatts)").pack()
+        tk.Label(text = "Potencia (watts)").pack()
         self.Potencia = tk.Entry()
         self.Potencia.pack()
         tk.Label(text = "Horas de uso").pack()
@@ -140,6 +141,8 @@ class Window2:
             tk.messagebox.showerror("Error", "Ingresa una potencia válida")
         elif (self.horas.get() == "" or self.horas.get().isdigit() == False or self.horas.get() == "0"):
             tk.messagebox.showerror("Error", "Ingresa una cantidad de horas válida")
+        elif(float(self.Corriente.get())*float(self.Voltaje.get()) != float(self.Potencia.get())):
+            tk.messagebox.showerror("Error", "La potencia no coincide con el voltaje y la corriente")
         else:
             self.electrodomesticos[self.name].append(self.Voltaje.get())
             self.electrodomesticos[self.name].append(self.Corriente.get())
@@ -172,7 +175,13 @@ class Window3:
         toolbar.update()
         toolbar.pack()
         toolbar.pan()
+        self.draw()
         self.master.mainloop()
+    def draw(self):
+        self.ax.arrow(0, 0, 100000, 0, linewidth=50, linestyle='-', head_width=0, head_length=0, color = "#B87333")
+        self.canvas.draw()
+    def calculate(self):
+        pass
 
 
 
