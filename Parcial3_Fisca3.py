@@ -51,7 +51,7 @@ class Window1:
         tk.Checkbutton(text = "Radio", variable = self.radio, onvalue = "Radio", offvalue = "0").pack()
         tk.Checkbutton(text = "Consola", variable = self.consola, onvalue = "Consola", offvalue = "0").pack()
         tk.Checkbutton(text = "Calentador", variable = self.calentador, onvalue = "Calentador", offvalue = "0").pack()
-        tk.Checkbutton(text = "Cocina", variable = self.cocina, onvalue = "Cocina", offvalue = "0").pack()
+        tk.Checkbutton(text = "Freidora", variable = self.cocina, onvalue = "Freidora", offvalue = "0").pack()
         tk.Checkbutton(text = "Licuadora", variable = self.licuadora, onvalue = "Licuadora", offvalue = "0").pack()
         tk.Checkbutton(text = "Horno", variable = self.horno, onvalue = "Horno", offvalue = "0").pack()
         tk.Label(text= "Selecciona el largo del cable (en metros)").pack()
