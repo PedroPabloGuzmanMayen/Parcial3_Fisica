@@ -2,6 +2,11 @@
 
 import tkinter as tk
 from tkinter import messagebox
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from mpl_interactions import ioff, panhandler, zoom_factory
+import numpy as np
 
 class Window1:
     def __init__(self, master):
@@ -141,7 +146,7 @@ class Window2:
             self.electrodomesticos[self.name].append(self.Potencia.get())
             self.electrodomesticos[self.name].append(self.horas.get())
 
-            if (self.index < len(self.list)):
+            if (self.index < (len(self.list)-1)):
                 self.index += 1
                 self.name = self.list[self.index]
                 self.master.destroy()
@@ -158,6 +163,15 @@ class Window3:
         self.master = tk.Tk()
         self.master.title("Resultados")
         self.master.geometry("1000x1000")
+        self.fig = Figure(figsize=(10, 4), dpi=100)
+        self.ax = self.fig.add_subplot()
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.master)
+        self.canvas.get_tk_widget().pack()
+        zoom_factory(self.ax, base_scale=1.1)
+        toolbar = NavigationToolbar2Tk(self.canvas, self.master, pack_toolbar=False)
+        toolbar.update()
+        toolbar.pack()
+        toolbar.pan()
         self.master.mainloop()
 
 
