@@ -20,6 +20,7 @@ canvas.get_tk_widget().pack()
 def update_image_position_and_size(x, y, width, height):
     img = np.asarray(Image.open("Radio.jpg"))
     ax.imshow(img, extent=[x, x + width, y, y + height])
+    print(1.72e-8*3)
     canvas.draw()
 
 # Initial position and size of the image
