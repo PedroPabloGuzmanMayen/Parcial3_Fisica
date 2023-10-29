@@ -1,5 +1,5 @@
 
-
+from PIL import Image
 import tkinter as tk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
@@ -9,6 +9,13 @@ from mpl_interactions import ioff, panhandler, zoom_factory
 import matplotlib.patches as patches
 import numpy as np
 import math
+
+def is_valid_number(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 class Window1:
     def __init__(self, master):
@@ -89,7 +96,7 @@ class Window1:
 
         if (len(self.electrodomesticos) == 0 or len(self.electrodomesticos) > 10):
             tk.messagebox.showerror("Error", "Selecciona entre 1 y 10 electrodomésticos")
-        elif (self.lenght.get() == "" or self.lenght.get().isdigit() == False or self.lenght.get() == "0"):
+        elif (is_valid_number(self.lenght.get()) == False or self.lenght.get() == "0"):
             tk.messagebox.showerror("Error", "Ingresa un largo válido")
         else:
             self.final_lenght = self.lenght.get()
@@ -133,15 +140,22 @@ class Window2:
         tk.Button(text = "Siguiente", command= self.next).pack()
         self.master.mainloop()
 
+    def is_valid_number(self, value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
     def next(self):
         pass
-        if (self.Voltaje.get() == "" or self.Voltaje.get().isdigit() == False or self.Voltaje.get() == "0"):
+        if (is_valid_number(self.Voltaje.get()) == False or self.Voltaje.get() == "0"):
             tk.messagebox.showerror("Error", "Ingresa un voltaje válido")
-        elif (self.Corriente.get() == "" or self.Corriente.get().isdigit() == False or self.Corriente.get() == "0"):
+        elif (is_valid_number(self.Corriente.get())== False or self.Corriente.get() == "0"):
             tk.messagebox.showerror("Error", "Ingresa una corriente válida")
-        elif (self.Potencia.get() == "" or self.Potencia.get().isdigit() == False or self.Potencia.get() == "0"):
+        elif (is_valid_number(self.Potencia.get()) == False or self.Potencia.get() == "0"):
             tk.messagebox.showerror("Error", "Ingresa una potencia válida")
-        elif (self.horas.get() == "" or self.horas.get().isdigit() == False or self.horas.get() == "0"):
+        elif (is_valid_number(self.horas.get()) == False or self.horas.get() == "0" or float(self.horas.get()) > 24):
             tk.messagebox.showerror("Error", "Ingresa una cantidad de horas válida")
         elif(float(self.Corriente.get())*float(self.Voltaje.get()) != float(self.Potencia.get())):
             tk.messagebox.showerror("Error", "La potencia no coincide con el voltaje y la corriente")
@@ -178,21 +192,36 @@ class Window3:
         toolbar.pack()
         toolbar.pan()
         self.draw()
-        tk.Label(text ="La tarifa a pagar es de: " + str(self.calculatePrice(potencias, horas)) + " quetzales").pack()
+        tk.Label(text ="La tarifa a pagar es de: " + str(self.calculateEnergy(potencias, horas)*1.47) + " quetzales").pack()
+        tk.Label(text= "Se consumieron " + str(self.calculateEnergy(potencias, horas)) + " kilowatts hora").pack()
         tk.Label(text ="El diámetro del cable es de: " + str(self.calculateDiameter(potencias, corrientes, float(self.lenght))) + " metros").pack()
-        tk.Label(text ="Se recomienda usar un calibre de: ")
+        tk.Label(text ="Se recomienda usar un calibre de: "+ str(self.calibre(self.calculateDiameter(potencias, corrientes, float(self.lenght))))).pack()
+        tk.Label(text= "Su factura es de: " + self.factura(potencias, horas)).pack()
+                 
         self.master.mainloop()
     def draw(self):
-        self.ax.arrow(0, 0, 100000, 0, linewidth=50, linestyle='-', head_width=0, head_length=0, color = "#B87333")
+        num_images = len(self.list)
+        image_size = 100
+        total_width = num_images * (image_size + 20)
+        if num_images >= 2:
+              # Adjust 20 for separation
+            self.ax.set_xlim(0, total_width)
+
+        for i in range(num_images):
+            x = i * (image_size + 20)  # Adjust 20 for separation
+            self.ax.imshow(np.asarray(Image.open(self.list[i] + ".jpg")), extent=[x, x + image_size, 0, image_size])
+
+        line = patches.Polygon([[0, -5], [total_width, -5]], closed=None, fill=None, edgecolor='#B87333')
+        self.ax.add_patch(line)
+    
         self.canvas.draw()
-    def calculatePrice(self, potencias, horas):
+
+    def calculateEnergy(self, potencias, horas):
         totalenergy = 0
-        price = 0
         for i in range(len(potencias)):
             totalenergy += (potencias[i]/1000)*horas[i]*30
-        price = totalenergy*1.47
+        return totalenergy
         
-        return price
     def calculateDiameter(self, potencias, corrientes, length):
         
         maxVal = max(potencias)
@@ -217,8 +246,11 @@ class Window3:
         elif 0.462 < diameter < 0.519:
             return "4"
         
-        def factura(self, potencias, horas):
-            self.calculatePrice(potencias, horas)
+    def factura(self, potencias, horas):
+        if self.calculateEnergy(potencias, horas) <= 11:
+            return "Baja tensión"
+        else:
+            return "Media tensión"
 
 
 
